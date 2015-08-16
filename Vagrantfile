@@ -10,20 +10,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--memory", 256]
   end
 
-  config.vm.define :haproxy, primary: true do |haproxy_config|
+  config.vm.define :haproxy1, primary: true do |haproxy1_config|
 
-    haproxy_config.vm.hostname = 'haproxy'
-    haproxy_config.vm.network :forwarded_port, guest: 8080, host: 8080
-    haproxy_config.vm.network :forwarded_port, guest: 80, host: 8081
+    haproxy1_config.vm.hostname = 'haproxy1'  
+    haproxy1_config.vm.network :public_network, ip: "192.168.1.9"
+    haproxy1_config.vm.provision :shell, :path => "haproxy1-setup.sh"
 
-    haproxy_config.vm.network :private_network, ip: "172.28.33.10"
-    haproxy_config.vm.provision :shell, :path => "haproxy-setup.sh"
+  end
+   config.vm.define :haproxy2, primary: true do |haproxy2_config|
+
+    haproxy2_config.vm.hostname = 'haproxy2'
+    haproxy2_config.vm.network :public_network, ip: "192.168.1.10"
+    haproxy2_config.vm.provision :shell, :path => "haproxy2-setup.sh"
 
   end
   config.vm.define :web1 do |web1_config|
 
     web1_config.vm.hostname = 'web1'
-    web1_config.vm.network :private_network, ip: "172.28.33.11"
+    web1_config.vm.network :public_network, ip: "192.168.1.11"
     web1_config.vm.provision :shell, :path => "web-setup.sh"
 
 
@@ -31,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define :web2 do |web2_config|
 
     web2_config.vm.hostname = 'web2'
-    web2_config.vm.network :private_network, ip: "172.28.33.12"
+    web2_config.vm.network :public_network, ip: "192.168.1.12"
     web2_config.vm.provision :shell, :path => "web-setup.sh"
 
   end
