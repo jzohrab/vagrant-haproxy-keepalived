@@ -35,6 +35,11 @@ frontend http-in
     default_backend webservers
 
 backend webservers
+    mode http
+    stats enable
+    stats auth admin:admin
+    stats uri /haproxy?stats
+    balance roundrobin
     balance roundrobin
     # Poor-man's sticky
     # balance source
@@ -45,10 +50,6 @@ backend webservers
     option http-server-close
     server web1 192.168.1.11:80 maxconn 32 check
     server web2 192.168.1.12:80 maxconn 32 check
-
-listen admin
-    bind *:8080
-    stats enable
 EOD
 
   cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
