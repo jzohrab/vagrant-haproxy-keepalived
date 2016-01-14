@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 haproxy_priority" >&2
+  exit 1
+fi
+
 #if [ ! -f /etc/haproxy/haproxy.cfg ]; then
 
   # Install haproxy
@@ -73,7 +78,7 @@ vrrp_instance VI_1 {
         interface eth1
         state MASTER
         virtual_router_id 51
-        priority 101                    # 101 on master, 100 on backup
+        priority $1
         virtual_ipaddress {
             192.168.1.2
         }
