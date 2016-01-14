@@ -37,7 +37,7 @@ frontend http-in
 backend webservers
     mode http
     stats enable
-    stats auth admin:admin
+    # stats auth admin:admin
     stats uri /haproxy?stats
     balance roundrobin
     balance roundrobin
