@@ -5,19 +5,17 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-#if [ ! -f /etc/haproxy/haproxy.cfg ]; then
+# Install haproxy
+/usr/bin/apt-get -y install haproxy keepalived
 
-  # Install haproxy
-  /usr/bin/apt-get -y install haproxy keepalived
-
-  # Configure haproxy
-  cat > /etc/default/haproxy <<EOD
+# Configure haproxy
+cat > /etc/default/haproxy <<EOD
 # Set ENABLED to 1 if you want the init script to start haproxy.
 ENABLED=1
 # Add extra flags here.
 #EXTRAOPTS="-de -m 16"
 EOD
-  cat > /etc/haproxy/haproxy.cfg <<EOD
+cat > /etc/haproxy/haproxy.cfg <<EOD
 global
     log 127.0.0.1   local0
     log 127.0.0.1   local1 notice
@@ -57,9 +55,9 @@ backend webservers
     server web2 192.168.1.12:80 maxconn 32 check
 EOD
 
-  cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
-  /usr/sbin/service haproxy restart
-#fi
+cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
+/usr/sbin/service haproxy restart
+
 
 cat >> /etc/sysctl.conf <<EOD 
 net.ipv4.ip_nonlocal_bind=1
