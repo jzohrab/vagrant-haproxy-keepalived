@@ -1,18 +1,21 @@
 #!/bin/bash
 
-#if [ ! -f /etc/haproxy/haproxy.cfg ]; then
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 haproxy_priority" >&2
+  exit 1
+fi
 
-  # Install haproxy
-  /usr/bin/apt-get -y install haproxy keepalived
+# Install haproxy
+/usr/bin/apt-get -y install haproxy keepalived
 
-  # Configure haproxy
-  cat > /etc/default/haproxy <<EOD
+# Configure haproxy
+cat > /etc/default/haproxy <<EOD
 # Set ENABLED to 1 if you want the init script to start haproxy.
 ENABLED=1
 # Add extra flags here.
 #EXTRAOPTS="-de -m 16"
 EOD
-  cat > /etc/haproxy/haproxy.cfg <<EOD
+cat > /etc/haproxy/haproxy.cfg <<EOD
 global
     log 127.0.0.1   local0
     log 127.0.0.1   local1 notice
@@ -37,7 +40,7 @@ frontend http-in
 backend webservers
     mode http
     stats enable
-    stats auth admin:admin
+    # stats auth admin:admin
     stats uri /haproxy?stats
     balance roundrobin
     balance roundrobin
@@ -52,9 +55,9 @@ backend webservers
     server web2 192.168.1.12:80 maxconn 32 check
 EOD
 
-  cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
-  /usr/sbin/service haproxy restart
-#fi
+cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
+/usr/sbin/service haproxy restart
+
 
 cat >> /etc/sysctl.conf <<EOD 
 net.ipv4.ip_nonlocal_bind=1
@@ -73,7 +76,7 @@ vrrp_instance VI_1 {
         interface eth1
         state MASTER
         virtual_router_id 51
-        priority 101                    # 101 on master, 100 on backup
+        priority $1
         virtual_ipaddress {
             192.168.1.2
         }
